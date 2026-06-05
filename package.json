@@ -1,0 +1,33 @@
+{
+  "name": "knohub",
+  "version": "0.1.0",
+  "description": "Open-source framework for building MCP servers with RAG knowledge bases",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx tsx packages/core/src/server.ts",
+    "ingest": "npx tsx packages/core/src/ingestion/ingest.ts",
+    "build:widget": "npm run build --prefix web",
+    "tunnel": "ngrok http 3000"
+  },
+  "keywords": ["mcp", "rag", "llm", "chatgpt", "claude", "knowledge-base"],
+  "author": "Koodit",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@lancedb/lancedb": "^0.30.0",
+    "@modelcontextprotocol/ext-apps": "^1.7.2",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "axios": "^1.16.1",
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "lancedb": "^0.0.1",
+    "openai": "^6.39.1",
+    "pdfjs-dist": "^6.0.227",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
+  }
+}
