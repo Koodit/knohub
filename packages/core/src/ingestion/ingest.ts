@@ -9,7 +9,7 @@ import { VectorStore, type VectorStoreConfig } from "../db/vectorStore";
 const CHUNK_SIZE = 800;
 const CHUNK_OVERLAP = 100;
 
-function chunkText(text: string, source: string) {
+export function chunkText(text: string, source: string) {
   const chunks: { id: string; source: string; content: string }[] = [];
   let i = 0;
   while (i < text.length) {

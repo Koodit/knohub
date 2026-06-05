@@ -7,9 +7,19 @@
     "start": "npx tsx packages/core/src/server.ts",
     "ingest": "npx tsx packages/core/src/ingestion/ingest.ts",
     "build:widget": "npm run build --prefix web",
-    "tunnel": "ngrok http 3000"
+    "tunnel": "ngrok http 3000",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["mcp", "rag", "llm", "chatgpt", "claude", "knowledge-base"],
+  "keywords": [
+    "mcp",
+    "rag",
+    "llm",
+    "chatgpt",
+    "claude",
+    "knowledge-base"
+  ],
   "author": "Koodit",
   "license": "MIT",
   "type": "commonjs",
@@ -27,7 +37,9 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "@vitest/coverage-v8": "^4.1.8",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }
