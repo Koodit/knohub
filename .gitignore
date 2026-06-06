@@ -1,7 +1,10 @@
-node_modules/
-dist/
-lancedb/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
 .env
-documents/*
-!documents/.gitkeep
-*.log
+lancedb/
+documents/
+*.egg-info/
+dist/
+.pytest_cache/
