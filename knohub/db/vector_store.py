@@ -30,6 +30,13 @@ class VectorStore:
     def _get_db(self) -> lancedb.DBConnection:
         return lancedb.connect(self._db_path)
 
+    def _open_table_or_none(self, db):
+        """Open the documents table, returning None if it doesn't exist."""
+        try:
+            return db.open_table(TABLE_NAME)
+        except Exception:
+            return None
+
     async def embed_text(self, text: str) -> List[float]:
         response = await self._client.embeddings.create(
             model=EMBEDDING_MODEL,
@@ -39,12 +46,12 @@ class VectorStore:
 
     def _add_documents_sync(self, rows: list, schema: pa.Schema) -> None:
         db = self._get_db()
-        table_names = db.list_tables()
-        if TABLE_NAME in table_names:
+        try:
+            db.create_table(TABLE_NAME, data=rows, schema=schema)
+        except Exception:
+            # table already exists — append
             tbl = db.open_table(TABLE_NAME)
             tbl.add(rows)
-        else:
-            db.create_table(TABLE_NAME, data=rows, schema=schema)
 
     async def add_documents(self, docs: List[Document]) -> None:
         if not docs:
@@ -71,9 +78,9 @@ class VectorStore:
 
     def _search_sync(self, vector: List[float], limit: int) -> List[Document]:
         db = self._get_db()
-        if TABLE_NAME not in db.list_tables():
+        tbl = self._open_table_or_none(db)
+        if tbl is None:
             return []
-        tbl = db.open_table(TABLE_NAME)
         results = tbl.search(vector).limit(limit).to_list()
         return [
             Document(id=r["id"], text=r["text"], source=r["source"], vector=list(r["vector"]))
@@ -82,14 +89,14 @@ class VectorStore:
 
     def _list_sources_sync(self) -> List[dict]:
         db = self._get_db()
-        if TABLE_NAME not in db.list_tables():
+        tbl = self._open_table_or_none(db)
+        if tbl is None:
             return []
-        tbl = db.open_table(TABLE_NAME)
-        rows = tbl.to_pandas()[["id", "source"]].to_dict("records")
-        # Count chunks per source
+        arrow_table = tbl.to_arrow()
+        sources = arrow_table.column("source").to_pylist()
         counts: dict = {}
-        for r in rows:
-            counts[r["source"]] = counts.get(r["source"], 0) + 1
+        for s in sources:
+            counts[s] = counts.get(s, 0) + 1
         return [{"source": s, "chunks": n} for s, n in sorted(counts.items())]
 
     async def list_sources(self) -> List[dict]:
